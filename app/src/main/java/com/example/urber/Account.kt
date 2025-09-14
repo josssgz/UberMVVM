@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -161,32 +163,96 @@ fun AccountBody(){
             verticalAlignment = Alignment.CenterVertically
         )
         {
-            AcountSmallCards(
-                w = 100.dp,
+            AccountSmallCards(
+                w = 110.dp,
                 h = 100.dp,
                 imageVector = Icons.Default.Call  ,
                 text = "Ajuda"
             )
-            AcountSmallCards(
-                w = 100.dp,
+            AccountSmallCards(
+                w = 110.dp,
                 h = 100.dp,
                 imageVector = Icons.Default.Menu  ,
                 text = "Carteira"
             )
-            AcountSmallCards(
-                w = 100.dp,
+            AccountSmallCards(
+                w = 110.dp,
                 h = 100.dp,
                 imageVector = Icons.Default.Email  ,
                 text = "Mensagem"
             )
         }
+        Spacer(
+            modifier = Modifier
+                .padding(6.dp)
+        )
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
+        ) {
+            AccountLargeCards(
+                imageVector = Icons.Default.Email,
+                title = "Ride Pass",
+                subtitle = "Save on Routine Rides"
+            )
+
+        }
+        Spacer(
+            modifier = Modifier
+                .padding(6.dp)
+        )
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
+        ) {
+            AccountLargeCards(
+                imageVector = Icons.Default.Email,
+                title = "Try Uber One free",
+                subtitle ="Unlock 10% Uber One credits on rides \nand more"
+            )
+
+        }
+        Spacer(
+            modifier = Modifier
+                .padding(6.dp)
+        )
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
+        ) {
+            AccountLargeCards(
+                imageVector = Icons.Default.Email,
+                        title = "Safety Checkup",
+                        subtitle ="Learn ways to make rides safer"
+            )
+
+        }
+        Spacer(
+            modifier = Modifier
+                .padding(6.dp)
+        )
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(70.dp)
+        ) {
+            AccountLargeCards(
+                imageVector = Icons.Default.Email,
+                title = "Estimated CO2 saved",
+                subtitle = ""
+            )
+
+        }
     }
 }
 @Composable
-fun AcountSmallCards(w: Dp, h: Dp, imageVector: ImageVector, text: String){
+fun AccountSmallCards(w:Dp, h: Dp, imageVector: ImageVector, text: String){
     Card (
         modifier = Modifier
-            .size(width = w, height = h ),
+            .size(width = w, height = h),
         colors = CardDefaults.cardColors(containerColor = Color.LightGray),
         shape = RoundedCornerShape(8.dp)
     ){
@@ -201,6 +267,37 @@ fun AcountSmallCards(w: Dp, h: Dp, imageVector: ImageVector, text: String){
                 contentDescription = text,
             )
             Text(text = text)
+        }
+    }
+}
+@Composable
+fun AccountLargeCards(title: String, subtitle: String, imageVector: ImageVector){
+    Card (
+        modifier = Modifier
+            .fillMaxSize(),
+        colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+
+    ){
+        Row (
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Column (
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.Center
+            ){
+                Text(text = title)
+                Text(text = subtitle)
+            }
+            Icon(
+                imageVector = imageVector,
+                contentDescription = title,
+                modifier = Modifier.size(50.dp)
+            )
         }
     }
 }
