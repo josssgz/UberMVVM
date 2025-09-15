@@ -1,6 +1,6 @@
 package com.example.urber
 
-import android.graphics.drawable.Icon
+import android.accounts.Account
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -184,7 +184,7 @@ fun AccountBody(){
         }
         Spacer(
             modifier = Modifier
-                .padding(6.dp)
+                .height(10.dp)
         )
         Row (
             modifier = Modifier
@@ -200,7 +200,7 @@ fun AccountBody(){
         }
         Spacer(
             modifier = Modifier
-                .padding(6.dp)
+                .height(10.dp)
         )
         Row (
             modifier = Modifier
@@ -216,7 +216,7 @@ fun AccountBody(){
         }
         Spacer(
             modifier = Modifier
-                .padding(6.dp)
+                .height(10.dp)
         )
         Row (
             modifier = Modifier
@@ -232,7 +232,7 @@ fun AccountBody(){
         }
         Spacer(
             modifier = Modifier
-                .padding(6.dp)
+                .height(10.dp)
         )
         Row (
             modifier = Modifier
@@ -246,6 +246,10 @@ fun AccountBody(){
             )
 
         }
+        AccountDownCards(
+            imageVector = Icons.Default.AccountCircle,
+            title = ""
+        )
     }
 }
 @Composable
@@ -274,7 +278,8 @@ fun AccountSmallCards(w:Dp, h: Dp, imageVector: ImageVector, text: String){
 fun AccountLargeCards(title: String, subtitle: String, imageVector: ImageVector){
     Card (
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxWidth()
+            .height(100.dp),
         colors = CardDefaults.cardColors(containerColor = Color.LightGray)
 
     ){
@@ -299,5 +304,18 @@ fun AccountLargeCards(title: String, subtitle: String, imageVector: ImageVector)
                 modifier = Modifier.size(50.dp)
             )
         }
+    }
+}
+@Composable
+fun AccountDownCards(title: String, imageVector: ImageVector){
+    Card (
+        modifier = Modifier
+            .fillMaxSize()
+    ){
+        Icon(
+            imageVector = imageVector,
+            contentDescription = title
+        )
+        Text(text = title)
     }
 }
