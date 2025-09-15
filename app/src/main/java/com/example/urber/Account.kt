@@ -1,5 +1,6 @@
 package com.example.urber
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,7 +31,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -188,9 +191,9 @@ fun AccountBody(){
                 .height(100.dp)
         ) {
             AccountLargeCards(
-                imageVector = Icons.Default.Email,
                 title = "Ride Pass",
-                subtitle = "Save on Routine Rides"
+                subtitle = "Save on Routine Rides",
+                painterResource(id = R.drawable.folha)
             )
 
         }
@@ -204,9 +207,9 @@ fun AccountBody(){
                 .height(100.dp)
         ) {
             AccountLargeCards(
-                imageVector = Icons.Default.Email,
                 title = "Try Uber One free",
-                subtitle ="Unlock 10% Uber One credits on rides \nand more"
+                subtitle ="Unlock 10% Uber One credits on rides \nand more",
+                painterResource(id = R.drawable.folha)
             )
 
         }
@@ -220,9 +223,9 @@ fun AccountBody(){
                 .height(100.dp)
         ) {
             AccountLargeCards(
-                imageVector = Icons.Default.Email,
                         title = "Safety Checkup",
-                        subtitle ="Learn ways to make rides safer"
+                subtitle ="Learn ways to make rides safer",
+                painterResource(id = R.drawable.folha)
             )
 
         }
@@ -236,9 +239,9 @@ fun AccountBody(){
                 .height(70.dp)
         ) {
             AccountLargeCards(
-                imageVector = Icons.Default.Email,
                 title = "Estimated CO2 saved",
-                subtitle = ""
+                subtitle = "",
+                painterResource(id = R.drawable.folha)
             )
 
         }
@@ -271,7 +274,7 @@ fun AccountSmallCards(w:Dp, h: Dp, imageVector: ImageVector, text: String){
     }
 }
 @Composable
-fun AccountLargeCards(title: String, subtitle: String, imageVector: ImageVector){
+fun AccountLargeCards(title: String, subtitle: String, image: Painter){
     Card (
         modifier = Modifier
             .fillMaxWidth()
@@ -294,8 +297,8 @@ fun AccountLargeCards(title: String, subtitle: String, imageVector: ImageVector)
                 Text(text = title)
                 Text(text = subtitle)
             }
-            Icon(
-                imageVector = imageVector,
+            Image(
+                painter = image,
                 contentDescription = title,
                 modifier = Modifier.size(50.dp)
             )
