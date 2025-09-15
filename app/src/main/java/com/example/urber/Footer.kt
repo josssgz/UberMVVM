@@ -54,12 +54,12 @@ fun CreateFooterOption(icon: ImageVector, description: String, text: String){
             imageVector = icon,
             contentDescription = description,
             modifier = Modifier
-                .size(30.dp)
+                .size(45.dp)
         )
 
         Text(
             text = text,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyLarge
         )
 
     }

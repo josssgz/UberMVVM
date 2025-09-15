@@ -1,7 +1,5 @@
 package com.example.urber
 
-import android.media.Image
-import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,9 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -45,7 +41,6 @@ fun ServicesScreen(){
         Column (
             modifier = Modifier
                 .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
         ) {
             ServicesContent()
         }
@@ -80,9 +75,20 @@ fun ServicesContent(){
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ){
-            repeat(2){
-                ServiceLargeCards(180.dp, 90.dp)
-            }
+            ServiceLargeCards(
+                180.dp,
+                90.dp,
+                painterResource(id = R.drawable.caricon),
+                "RideIcon",
+                "Ride"
+            )
+            ServiceLargeCards(
+                180.dp,
+                90.dp,
+                painterResource(id = R.drawable.reserveicon),
+                "ReserveIcon",
+                "Reserve"
+            )
         }
 
         Spacer(
@@ -99,9 +105,9 @@ fun ServicesContent(){
             ServiceSmallCards(
                 83.dp,
                 90.dp,
-                painterResource(id = R.drawable.reserveicon),
-                "reserveIcon",
-                "Reserve"
+                painterResource(id = R.drawable.motoicon),
+                "MotoIcon",
+                "Moto"
             )
 
             ServiceSmallCards(
@@ -154,9 +160,20 @@ fun ServicesContent(){
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            repeat(2){
-                ServiceLargeCards(180.dp, 90.dp)
-            }
+            ServiceLargeCards(
+                180.dp,
+                90.dp,
+                painterResource(id = R.drawable.caixaicon),
+                "SendIcon",
+                "Send"
+            )
+            ServiceLargeCards(
+                180.dp,
+                90.dp,
+                painterResource(id = R.drawable.caixasicon),
+                "FlashNacionalIcon",
+                "Flash Nacional"
+            )
         }
 
     }
@@ -170,7 +187,7 @@ fun ServiceHeader(){
         modifier = Modifier
             .fillMaxWidth()
             .padding(15.dp)
-            .padding(top = 15.dp)
+            .padding(top = 20.dp)
     ) {
         Text(
             text = "Services",
@@ -182,14 +199,50 @@ fun ServiceHeader(){
 }
 
 @Composable
-fun ServiceLargeCards(w: Dp, h: Dp){
+fun ServiceLargeCards(w: Dp, h: Dp, image: Painter, imgDescription: String, imgText: String){
 
     Card (
         modifier = Modifier
             .size(w, h),
         colors = CardDefaults.cardColors(Color.LightGray),
         shape = RoundedCornerShape(8.dp)
-    ) {  }
+    ) {
+        Column (
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 5.dp),
+        ) {
+
+            Row (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .padding(horizontal = 10.dp),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.End
+            ) {
+                Image(
+                    painter = image,
+                    contentDescription = imgDescription,
+                    modifier = Modifier
+                        .size(50.dp)
+                )
+            }
+
+            Row (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(horizontal = 10.dp)
+            ) {
+                Text(
+                    text = imgText,
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
+
+        }
+    }
 
 }
 
