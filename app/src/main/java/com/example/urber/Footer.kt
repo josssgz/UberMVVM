@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,12 +55,14 @@ fun CreateFooterOption(icon: ImageVector, description: String, text: String){
             imageVector = icon,
             contentDescription = description,
             modifier = Modifier
-                .size(45.dp)
+                .size(45.dp),
+            tint = Color.DarkGray
         )
 
         Text(
             text = text,
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.DarkGray
         )
 
     }

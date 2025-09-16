@@ -58,6 +58,17 @@ fun HomeScreen(){
 @Composable
 fun HomeBody(){
 
+    Column {
+
+        HomeSuggestions()
+
+    }
+
+}
+
+@Composable
+fun HomeSuggestions(){
+
     val CardsContents = listOf(
         CardContent(
             color = Color.Gray,
@@ -79,88 +90,86 @@ fun HomeBody(){
         )
     )
 
-    Column {
-        Row (
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 14.dp)
-                .padding(bottom = 15.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom
-        ) {
-            Text(
-                text = "Suggestions",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+    Row (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 14.dp)
+            .padding(bottom = 15.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Text(
+            text = "Suggestions",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "See all",
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold
+        )
+    }
+
+    Row (
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+    ) {
+        ServiceSmallCards(
+            w = 83.dp,
+            h = 90.dp,
+            image =painterResource(id = R.drawable.motoicon),
+            imgDescription = "MotoIcon",
+            imgText = "Moto"
+        )
+
+        ServiceSmallCards(
+            w = 83.dp,
+            h = 90.dp,
+            image = painterResource(id = R.drawable.twowheelsicon),
+            imgDescription = "2wheelsIcon",
+            imgText = "2-Wheels"
+        )
+
+        ServiceSmallCards(
+            w = 83.dp,
+            h = 90.dp,
+            image = painterResource(id = R.drawable.senioricon),
+            imgDescription = "seniorIcon",
+            imgText = "Seniors"
+        )
+
+        ServiceSmallCards(
+            w = 83.dp,
+            h = 90.dp,
+            image = painterResource(id = R.drawable.teenicon),
+            imgDescription = "teenIcon",
+            imgText = "Teens"
+        )
+    }
+
+    LazyRow (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 12.dp)
+            .padding(14.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(CardsContents) { CardContent ->
+            CreateCardsWContent(
+                color = CardContent.color,
+                text = CardContent.text,
+                buttonText = CardContent.buttonText,
+                image = painterResource(id = CardContent.imageRes)
             )
-            Text(
-                text = "See all",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold
-            )
-        }
-
-        Row (
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-        ) {
-            ServiceSmallCards(
-                w = 83.dp,
-                h = 90.dp,
-                image =painterResource(id = R.drawable.motoicon),
-                imgDescription = "MotoIcon",
-                imgText = "Moto"
-            )
-
-            ServiceSmallCards(
-                w = 83.dp,
-                h = 90.dp,
-                image = painterResource(id = R.drawable.twowheelsicon),
-                imgDescription = "2wheelsIcon",
-                imgText = "2-Wheels"
-            )
-
-            ServiceSmallCards(
-                w = 83.dp,
-                h = 90.dp,
-                image = painterResource(id = R.drawable.senioricon),
-                imgDescription = "seniorIcon",
-                imgText = "Seniors"
-            )
-
-            ServiceSmallCards(
-                w = 83.dp,
-                h = 90.dp,
-                image = painterResource(id = R.drawable.teenicon),
-                imgDescription = "teenIcon",
-                imgText = "Teens"
-            )
-        }
-
-        LazyRow (
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp)
-                .padding(14.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-
-            items(CardsContents) { CardContent ->
-                CreateCardsWContent(
-                    color = CardContent.color,
-                    text = CardContent.text,
-                    buttonText = CardContent.buttonText,
-                    image = painterResource(id = CardContent.imageRes)
-                )
-            }
-
         }
     }
 
 }
 
-//@Preview (showBackground = true)
+
+
+
 @Composable
 fun CreateCardsWContent(color: Color, text: String, buttonText: String, image: Painter){
 
@@ -169,7 +178,6 @@ fun CreateCardsWContent(color: Color, text: String, buttonText: String, image: P
             .size(365.dp, 160.dp)
             .clip(RoundedCornerShape(12.dp))
     ){
-
         Column (
             modifier = Modifier
                 .fillMaxHeight()
@@ -234,7 +242,6 @@ fun CreateCardsWContent(color: Color, text: String, buttonText: String, image: P
                 contentScale = ContentScale.Crop
             )
         }
-
     }
 
 }
