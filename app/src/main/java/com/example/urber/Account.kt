@@ -162,19 +162,19 @@ fun AccountBody(){
         )
         {
             AccountSmallCards(
-                w = 110.dp,
+                w = 115.dp,
                 h = 100.dp,
                 imageVector = Icons.Default.Call  ,
                 text = "Ajuda"
             )
             AccountSmallCards(
-                w = 110.dp,
+                w = 115.dp,
                 h = 100.dp,
                 imageVector = Icons.Default.Menu  ,
                 text = "Carteira"
             )
             AccountSmallCards(
-                w = 110.dp,
+                w = 115.dp,
                 h = 100.dp,
                 imageVector = Icons.Default.Email  ,
                 text = "Mensagem"
