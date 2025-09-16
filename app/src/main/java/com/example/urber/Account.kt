@@ -141,7 +141,6 @@ fun AccountHeader(){
         }
     }
 }
-
 @Composable
 fun AccountBody(){
     Column(
@@ -193,7 +192,7 @@ fun AccountBody(){
             AccountLargeCards(
                 title = "Ride Pass",
                 subtitle = "Save on Routine Rides",
-                painterResource(id = R.drawable.folha)
+                painterResource(id = R.drawable.pass)
             )
 
         }
@@ -209,7 +208,7 @@ fun AccountBody(){
             AccountLargeCards(
                 title = "Try Uber One free",
                 subtitle ="Unlock 10% Uber One credits on rides \nand more",
-                painterResource(id = R.drawable.folha)
+                painterResource(id = R.drawable.car)
             )
 
         }
@@ -223,9 +222,9 @@ fun AccountBody(){
                 .height(100.dp)
         ) {
             AccountLargeCards(
-                        title = "Safety Checkup",
+                title = "Safety Checkup",
                 subtitle ="Learn ways to make rides safer",
-                painterResource(id = R.drawable.folha)
+                painterResource(id = R.drawable.load)
             )
 
         }
@@ -240,15 +239,125 @@ fun AccountBody(){
         ) {
             AccountLargeCards(
                 title = "Estimated CO2 saved",
-                subtitle = "",
+                subtitle = null,
                 painterResource(id = R.drawable.folha)
             )
 
         }
-        AccountDownCards(
-            imageVector = Icons.Default.AccountCircle,
-            title = ""
+        Spacer(
+            modifier = Modifier
+                .height(10.dp)
         )
+        AccountDownRows(
+            painterResource(id = R.drawable.family),
+            title = " Family and Teens",
+            subtitle = "Teen and adult accounts"
+        )
+        Spacer(
+            modifier = Modifier
+                .height(10.dp)
+        )
+        AccountDownRows(
+            painterResource(id = R.drawable.gear),
+            title = " Settings",
+
+            subtitle = null
+        )
+        Spacer(
+            modifier = Modifier
+                .height(10.dp)
+        )
+        AccountDownRows(
+            painterResource(id = R.drawable.phone),
+            title = " Simple mode",
+            subtitle = "A simplied app for older adults"
+        )
+        Spacer(
+            modifier = Modifier
+                .height(10.dp)
+        )
+        AccountDownRows(
+            painterResource(id = R.drawable.gift),
+            title = " Send a gift",
+            subtitle = null
+        )
+        Spacer(
+            modifier = Modifier
+                .height(10.dp)
+        )
+        AccountDownRows(
+            painterResource(id = R.drawable.driver),
+            title = " Earn by driving or delivering",
+            subtitle = null
+        )
+        Spacer(
+            modifier = Modifier
+                .height(10.dp)
+        )
+        AccountDownRows(
+            painterResource(id = R.drawable.group),
+            title = " Saved groups",
+            subtitle = null
+        )
+        Spacer(
+            modifier = Modifier
+                .height(10.dp)
+        )
+        AccountDownRows(
+            painterResource(id = R.drawable.business),
+            title = " Set up your business profile",
+            subtitle = "Automate work travel & meal expenses"
+        )
+
+        Spacer(
+            modifier = Modifier
+                .height(10.dp)
+        )
+        AccountDownRows(
+            painterResource(id = R.drawable.trophy),
+            title = " Partner Rewards",
+            subtitle = null
+        )
+        Spacer(
+            modifier = Modifier
+                .height(10.dp)
+        )
+        AccountDownRows(
+            painterResource(id = R.drawable.group),
+            title = " Refer friends, unlock deals",
+            subtitle = null
+        )
+        Spacer(
+            modifier = Modifier
+                .height(10.dp)
+        )
+        AccountDownRows(
+            painterResource(id = R.drawable.user),
+            title = " Menage Uber account",
+            subtitle = null
+        )
+        Spacer(
+            modifier = Modifier
+                .height(10.dp)
+        )
+        AccountDownRows(
+            painterResource(id = R.drawable.legal),
+            title = " Legal",
+            subtitle = null
+        )
+        Spacer(
+            modifier = Modifier
+                .height(10.dp)
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(30.dp)
+        ) {
+            Text("v1.0000000")
+        }
+
+
     }
 }
 @Composable
@@ -274,7 +383,7 @@ fun AccountSmallCards(w:Dp, h: Dp, imageVector: ImageVector, text: String){
     }
 }
 @Composable
-fun AccountLargeCards(title: String, subtitle: String, image: Painter){
+fun AccountLargeCards(title: String, subtitle: String?, image: Painter){
     Card (
         modifier = Modifier
             .fillMaxWidth()
@@ -295,7 +404,9 @@ fun AccountLargeCards(title: String, subtitle: String, image: Painter){
                 verticalArrangement = Arrangement.Center
             ){
                 Text(text = title)
-                Text(text = subtitle)
+                if (subtitle != null && subtitle.isNotEmpty()) {
+                    Text(text = subtitle)
+                }
             }
             Image(
                 painter = image,
@@ -306,15 +417,32 @@ fun AccountLargeCards(title: String, subtitle: String, image: Painter){
     }
 }
 @Composable
-fun AccountDownCards(title: String, imageVector: ImageVector){
-    Card (
+fun AccountDownRows(image: Painter, title: String, subtitle: String?){
+    Row (
         modifier = Modifier
             .fillMaxSize()
+            .height(50.dp)
+            .padding(5.dp),
+        verticalAlignment = Alignment.CenterVertically
     ){
-        Icon(
-            imageVector = imageVector,
+        Image(
+            modifier = Modifier
+                .size(30.dp),
+            painter = image,
             contentDescription = title
         )
-        Text(text = title)
+        Spacer(
+            modifier = Modifier
+                .width(20.dp)
+        )
+        Column (
+            modifier = Modifier,
+            verticalArrangement = Arrangement.Center
+        ){
+            Text(text = title)
+            if (subtitle != null && subtitle.isNotEmpty()) {
+                Text(text = subtitle)
+            }
+        }
     }
 }
