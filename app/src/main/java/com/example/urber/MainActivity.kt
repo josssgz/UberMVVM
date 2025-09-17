@@ -11,7 +11,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             //ServicesScreen()
-            AccountScreen()
+            HomeScreen()
+            //AccountScreen()
 
         }
     }

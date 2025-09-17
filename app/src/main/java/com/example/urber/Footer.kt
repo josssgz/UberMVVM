@@ -40,7 +40,6 @@ fun Footer(){
         CreateFooterOption(Icons.Default.Person, "account", "Account")
 
     }
-
 }
 
 @Composable
