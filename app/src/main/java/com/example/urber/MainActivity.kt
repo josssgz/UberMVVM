@@ -12,7 +12,7 @@ class MainActivity : ComponentActivity() {
         setContent {
            // ServicesScreen()
            // HomeScreen()
-            AccountScreen()
+            //AccountScreen()
             //ActivityScreen()
         }
     }
