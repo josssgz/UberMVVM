@@ -59,88 +59,7 @@ fun AccountScreen(){
 
     }
 }
-@Composable
-fun AccountHeader(){
-    Card (
-        modifier = Modifier
-            .padding(15.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent),
-    ){
-        Row (
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-                .padding(15.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column (
-                modifier = Modifier
-                    .weight(1f)
-                    .height(80.dp),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text("José Farah", style = MaterialTheme.typography.displayMedium
-                    .copy(fontWeight = FontWeight.Bold))
-                Row {
-                    Card(
-                        shape = RoundedCornerShape(3.dp),
-                        colors = CardDefaults.cardColors(Color.DarkGray)
-                    ) {
-                        Row (
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .padding(horizontal = 2.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Star,
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .size(10.dp),
-                                tint = Color.Yellow
-                            )
-                            Text(
-                                text = "4.88",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = Color.White,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .padding(horizontal = 2.dp)
-                            )
-                        }
-                    }
 
-                    Spacer(
-                        modifier = Modifier
-                            .width(15.dp)
-                    )
-                    Card(
-                        shape = RoundedCornerShape(3.dp),
-                        colors = CardDefaults.cardColors(Color.DarkGray)
-                    ) {
-                        Text("Not verified",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color.White,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .padding(horizontal = 2.dp)
-                        )
-                    }
-                }
-            }
-            Spacer(
-                modifier = Modifier
-                    .width(13.dp)
-            )
-            Icon(
-                imageVector = Icons.Default.AccountCircle,
-                contentDescription = "",
-                modifier = Modifier
-                    .size(60.dp)
-            )
-        }
-    }
-}
 @Composable
 fun AccountBody(){
     Column(
@@ -352,7 +271,8 @@ fun AccountBody(){
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(30.dp)
+                .height(50.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text("v1.0000000")
         }
@@ -378,7 +298,11 @@ fun AccountSmallCards(w:Dp, h: Dp, imageVector: ImageVector, text: String){
                 imageVector = imageVector,
                 contentDescription = text,
             )
-            Text(text = text)
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
@@ -403,9 +327,15 @@ fun AccountLargeCards(title: String, subtitle: String?, image: Painter){
                     .fillMaxHeight(),
                 verticalArrangement = Arrangement.Center
             ){
-                Text(text = title)
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold
+                )
                 if (subtitle != null && subtitle.isNotEmpty()) {
-                    Text(text = subtitle)
+                    Text(
+                        text = subtitle
+                    )
                 }
             }
             Image(
@@ -439,10 +369,100 @@ fun AccountDownRows(image: Painter, title: String, subtitle: String?){
             modifier = Modifier,
             verticalArrangement = Arrangement.Center
         ){
-            Text(text = title)
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold
+            )
             if (subtitle != null && subtitle.isNotEmpty()) {
-                Text(text = subtitle)
+                Text(
+                    text = subtitle
+                )
             }
+        }
+    }
+}
+@Composable
+fun AccountHeader(){
+    Card (
+        modifier = Modifier
+            .padding(15.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent),
+    ){
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
+                .padding(15.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column (
+                modifier = Modifier
+                    .weight(1f)
+                    .height(80.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text("José Farah", style = MaterialTheme.typography.displayMedium
+                    .copy(fontWeight = FontWeight.Bold))
+                Row {
+                    Card(
+                        shape = RoundedCornerShape(3.dp),
+                        colors = CardDefaults.cardColors(Color.DarkGray)
+                    ) {
+                        Row (
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .padding(horizontal = 2.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .size(10.dp),
+                                tint = Color.Yellow
+                            )
+                            Text(
+                                text = "4.88",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .padding(horizontal = 2.dp)
+                            )
+                        }
+                    }
+
+                    Spacer(
+                        modifier = Modifier
+                            .width(15.dp)
+                    )
+                    Card(
+                        shape = RoundedCornerShape(3.dp),
+                        colors = CardDefaults.cardColors(Color.DarkGray)
+                    ) {
+                        Text("Not verified",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(horizontal = 2.dp)
+                        )
+                    }
+                }
+            }
+            Spacer(
+                modifier = Modifier
+                    .width(13.dp)
+            )
+            Icon(
+                imageVector = Icons.Default.AccountCircle,
+                contentDescription = "",
+                modifier = Modifier
+                    .size(60.dp)
+            )
         }
     }
 }

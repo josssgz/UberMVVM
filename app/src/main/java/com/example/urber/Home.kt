@@ -200,7 +200,7 @@ fun CreateHomeCardsWText(title: String, subtitle: String, image: Painter){
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge,
-                //fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.padding(vertical = 1.dp))
             Text(

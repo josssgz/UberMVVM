@@ -10,10 +10,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            //ServicesScreen()
-            HomeScreen()
-            //AccountScreen()
-
+           // ServicesScreen()
+           // HomeScreen()
+            AccountScreen()
+            //ActivityScreen()
         }
     }
 }
