@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -14,17 +15,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,38 +45,117 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
-@Preview (showBackground = true)
 @Composable
-fun HomeScreen(){
-    Scaffold (
-        topBar = { HomeHeader() },
-        bottomBar = { Footer() }
-    ) {
-        innerPadding ->
-
-        Column (
-            modifier = Modifier
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-        ) {
-            HomeBody()
-        }
-
+fun HomeScreen(navController: NavController) {
+    Scaffold(
+        topBar = { HomeHeader() }
+    ) { innerPadding ->
+        HomeBody(modifier = Modifier.padding(innerPadding))
     }
 }
 
 @Composable
-fun HomeBody(){
+fun HomeBody(modifier: Modifier = Modifier) {
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        item { HomeWhereTo() }
+        item { HomeSuggestions() }
+        item { HomeCardsWText() }
+    }
+}
+
+@Composable
+fun HomeWhereTo() {
+    var places = remember { mutableStateListOf(Place("Universidade Positivo")) }
 
     Column {
+        Formulario { textNewPlace ->
+            if (textNewPlace.isNotBlank()) {
+                places.add(Place(textNewPlace))
+            }
+        }
+        Spacer(modifier = Modifier.height(10.dp))
 
-        HomeSuggestions()
-        HomeCardsWText()
+        places.forEach { pl ->
+            Place(pl)
+            Spacer(modifier = Modifier.height(5.dp))
+        }
     }
+}
 
+data class Place(
+    val text: String
+)
+
+@Composable
+fun Formulario(aoAdicionar: (String) -> Unit) {
+    var textoInput by remember { mutableStateOf("") }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 15.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TextField(
+            value = textoInput,
+            onValueChange = { textoInput = it },
+            shape = RoundedCornerShape(16.dp),
+            placeholder = {
+                Row {
+                    Icon(imageVector = Icons.Default.Search, contentDescription = null)
+                    Spacer(modifier = Modifier.width(2.dp))
+                    Text("Where to?")
+                }
+            }
+        )
+
+        Spacer(modifier = Modifier.width(5.dp))
+
+        Button(
+            onClick = {
+                aoAdicionar(textoInput)
+                textoInput = ""
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Black,
+                contentColor = Color.White
+            )
+        ) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = "Icone Add")
+        }
+    }
+}
+
+@Composable
+fun Place(objPlace: Place) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(imageVector = Icons.Default.Place, contentDescription = null)
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = objPlace.text,
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+    }
 }
 
 data class CardsWText(
@@ -369,7 +460,7 @@ fun CreateCardsWContent(color: Color, text: String, buttonText: String, image: P
             ) {
                 Text(
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxWidth(),
                     text = text,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
@@ -402,14 +493,14 @@ fun CreateCardsWContent(color: Color, text: String, buttonText: String, image: P
 
         Column (
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
 
         ) {
             Image(
                 painter = image,
                 contentDescription = null,
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxWidth(),
                 contentScale = ContentScale.Crop
             )
         }
@@ -418,12 +509,14 @@ fun CreateCardsWContent(color: Color, text: String, buttonText: String, image: P
 }
 
 @Composable
-fun HomeHeader(){
-    Row (modifier =  Modifier.fillMaxWidth()
-        .height(70.dp)
-        .padding(10.dp),
+fun HomeHeader() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(70.dp)
+            .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically
-    ){
+    ) {
         Text(
             text = "Uber",
             style = MaterialTheme.typography.displayMedium,

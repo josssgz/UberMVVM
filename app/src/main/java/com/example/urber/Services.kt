@@ -24,17 +24,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
-@Preview (showBackground = true)
+//@Preview (showBackground = true)
 @Composable
-fun ServicesScreen(){
+fun ServicesScreen(navController: NavController){
 
     Scaffold (
-        topBar = { ServiceHeader() },
-        bottomBar = { Footer() }
+        topBar = { ServiceHeader() }
     ) {
         innerPadding ->
 

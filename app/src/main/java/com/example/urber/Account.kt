@@ -36,18 +36,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
-@Preview (showBackground = true)
+//@Preview (showBackground = true)
 @Composable
-fun AccountScreen(){
+fun AccountScreen(navController: NavController){
     Scaffold (
-        topBar = { AccountHeader() },
-        bottomBar = { Footer() }
+        topBar = { AccountHeader() }
     ) {
-            innerPadding ->
+        innerPadding ->
 
         Column (
             modifier = Modifier
