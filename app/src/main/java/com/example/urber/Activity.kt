@@ -40,12 +40,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 @Composable
-
 fun ActivityScreen(navController: NavHostController) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
+
         Scaffold(
             topBar = { HeaderActivity() },
         ) { innerPadding ->
@@ -58,7 +54,7 @@ fun ActivityScreen(navController: NavHostController) {
             }
         }
     }
-}
+
 @Composable
 fun BodyActivity(){
 
