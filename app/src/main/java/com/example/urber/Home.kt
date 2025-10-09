@@ -21,21 +21,25 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,10 +47,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -73,26 +80,94 @@ fun HomeBody(modifier: Modifier = Modifier) {
 
 @Composable
 fun HomeWhereTo() {
-    var places = remember { mutableStateListOf(Place("Universidade Positivo")) }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    val placesDAO = remember {
+        AppDatabase.getDatabase(context).placesDAO()
+    }
+
+    val places by placesDAO.getAllPlaces().collectAsStateWithLifecycle(initialValue = emptyList())
+
+    var placeToEdit by remember { mutableStateOf<Places?>(null) }
 
     Column {
         Formulario { textNewPlace ->
             if (textNewPlace.isNotBlank()) {
-                places.add(Place(textNewPlace))
+                scope.launch{
+                    placesDAO.addPlace(Places(desc = textNewPlace))
+                }
             }
         }
         Spacer(modifier = Modifier.height(10.dp))
 
-        places.forEach { pl ->
-            Place(pl)
+        places.forEach { place ->
+            PlaceItem(
+                objPlace = place,
+                onUpdate = { placeToEdit = place },
+                onDelete = {
+                    scope.launch {
+                        placesDAO.deletePlace(it)
+                    }
+                }
+            )
             Spacer(modifier = Modifier.height(5.dp))
         }
     }
+    if(placeToEdit != null){
+        EditPlaceDialog(
+            objPlace = placeToEdit!!,
+            onDismiss = { placeToEdit = null },
+            onSave = { newText ->
+                scope.launch {
+                    val updatedPlace = placeToEdit!!.copy(desc = newText)
+                    placesDAO.updatePlace(updatedPlace)
+                    placeToEdit = null
+                }
+            }
+        )
+    }
 }
 
-data class Place(
-    val text: String
-)
+@Composable
+fun EditPlaceDialog(objPlace: Places, onDismiss: () -> Unit, onSave: (String) -> Unit) {
+    var editedText by remember { mutableStateOf(objPlace.desc) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Editar Local") },
+        text = {
+            TextField(
+                value = editedText,
+                onValueChange = { editedText = it },
+                singleLine = true
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (editedText.isNotBlank()) {
+                        onSave(editedText)
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Green
+                )
+            ) {
+                Text("Salvar")
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = onDismiss,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Red
+                )
+            ) {
+                Text("Cancelar")
+            }
+        }
+    )
+}
 
 @Composable
 fun Formulario(aoAdicionar: (String) -> Unit) {
@@ -136,7 +211,7 @@ fun Formulario(aoAdicionar: (String) -> Unit) {
 }
 
 @Composable
-fun Place(objPlace: Place) {
+fun PlaceItem(objPlace: Places, onUpdate: (Places) -> Unit, onDelete: (Places) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -151,9 +226,16 @@ fun Place(objPlace: Place) {
             Icon(imageVector = Icons.Default.Place, contentDescription = null)
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = objPlace.text,
-                style = MaterialTheme.typography.bodyLarge
+                text = objPlace.desc,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f)
             )
+            IconButton(onClick = { onUpdate(objPlace) }) {
+                Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Place")
+            }
+            IconButton(onClick = { onDelete(objPlace) }) {
+                Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete Place")
+            }
         }
     }
 }
@@ -394,21 +476,21 @@ fun HomeSuggestions(){
 
     val CardsContents = listOf(
         CardContent(
-            color = Color.Gray,
-            text = "Enjoy a little more room with Uber Comfort",
-            buttonText = "Try Comfort",
+            color = Color.Blue,
+            text = "Send supplies across town",
+            buttonText = "Get started",
             image = R.drawable.image
         ),
         CardContent(
-            color = Color.Magenta,
-            text = "Luxurious rides await, choo Uber Black",
-            buttonText = "Ride Uber Black",
+            color = Color.Black,
+            text = "Luxury on call",
+            buttonText = "Try Uber Black",
             image = R.drawable.image
         ),
         CardContent(
             color = Color.Blue,
-            text = "Ready? Then let's roll.",
-            buttonText = "Ride with Uber",
+            text = "Ride on your schedule",
+            buttonText = "Rerserve a ride",
             image = R.drawable.image
         )
     )
