@@ -17,17 +17,24 @@ fun AppNavigation(){
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: "home"
+    val rotasSemFooter = listOf("login","register")
+    val deveMostrarFooter = currentRoute !in rotasSemFooter
 
     Scaffold (
-        bottomBar = { Footer(navController, currentRoute) }
+        bottomBar = { if (deveMostrarFooter) {
+            Footer(navController, currentRoute ?: "home")
+            }
+        }
     ) {
         innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "home",
+            startDestination = "register",
             modifier = Modifier
                 .padding(innerPadding)
         ){
+            composable("register") { RegisterScreen(navController) }
+            composable("login") { LoginScreen(navController) }
             composable("home") { HomeScreen(navController) }
             composable("services") { ServicesScreen(navController) }
             composable("activity") { ActivityScreen(navController) }

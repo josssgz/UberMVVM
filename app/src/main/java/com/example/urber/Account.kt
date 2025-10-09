@@ -26,6 +26,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,20 +43,24 @@ import androidx.navigation.NavController
 
 //@Preview (showBackground = true)
 @Composable
-fun AccountScreen(navController: NavController){
-    Scaffold (
-        topBar = { AccountHeader() }
+fun AccountScreen(navController: NavController) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        innerPadding ->
+        Scaffold(
+            topBar = { AccountHeader() }
+        ) { innerPadding ->
 
-        Column (
-            modifier = Modifier
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-        ) {
-            AccountBody()
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                AccountBody()
+            }
+
         }
-
     }
 }
 
