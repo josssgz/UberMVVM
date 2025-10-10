@@ -1,6 +1,7 @@
 package com.example.urber
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -54,10 +55,9 @@ fun LoginScreen(navController: NavHostController){
                            .size(200.dp)
                    )
 
-
                    Spacer(modifier = Modifier.height(16.dp))
 
-                   bodyLogin()
+                   bodyLogin(navController = navController)
 
             }
         }
@@ -66,20 +66,21 @@ fun LoginScreen(navController: NavHostController){
 
 
 @Composable
-fun bodyLogin(){
+fun bodyLogin(navController: NavHostController){
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     Surface (
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp),
+            .height(300.dp),
         color = Color.Transparent
 
     ){
         Column (
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ){
 
             TextField(
@@ -102,6 +103,15 @@ fun bodyLogin(){
             Spacer(modifier = Modifier.height(16.dp))
 
             buttonLogin()
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text("Register",
+                modifier = Modifier.clickable {
+                    navController.navigate("register")
+                })
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

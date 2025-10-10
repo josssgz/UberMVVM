@@ -60,12 +60,12 @@ fun HomeScreen(navController: NavController) {
     Scaffold(
         topBar = { HomeHeader() }
     ) { innerPadding ->
-        HomeBody(modifier = Modifier.padding(innerPadding))
+        HomeBody(navController = navController, modifier = Modifier.padding(innerPadding))
     }
 }
 
 @Composable
-fun HomeBody(modifier: Modifier = Modifier) {
+fun HomeBody(navController: NavController, modifier: Modifier = Modifier) {
     LazyColumn(
         modifier = modifier
             .fillMaxSize(),
