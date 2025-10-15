@@ -1,84 +1,58 @@
 package com.example.urber
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-
-
-class UserViewModel : ViewModel() {
-    fun registerUser(nome: String, dataNasc: String, sexo: String, endereco: String, email: String, password: String) {
-        println("Registrando via ViewModel: Nome=$nome, Data=$dataNasc, Email=$email")
-    }
-}
-// ----------------------------------------------------------------------
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
-fun RegisterScreen(navController: NavHostController){
+fun RegisterScreen(navController: NavHostController) {
     Surface {
-        Scaffold(containerColor = Color.Transparent) {
-                innerPadding ->
-            Column (
+        Scaffold(containerColor = Color.Transparent) { innerPadding ->
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
                     .padding(horizontal = 24.dp),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
-            ){
+            ) {
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                Text(text = "Create your Urber Account", style = androidx.compose.ui.text.TextStyle(fontSize = 24.sp))
+                Text(
+                    text = "Create your Urber Account",
+                    style = androidx.compose.ui.text.TextStyle(fontSize = 24.sp)
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Form(navController = navController)
-
+                Form(navController = navController, registerUser = { nome ->
+                    // Aqui poderia salvar no banco de dados ou API
+                })
             }
         }
     }
 }
 
-
 @Composable
-
-fun Form(navController: NavHostController){
-
-    val userViewModel: UserViewModel = viewModel()
+fun Form(navController: NavHostController, registerUser: (String) -> Unit) {
     var nome by remember { mutableStateOf("") }
     var datansc by remember { mutableStateOf("") }
     var sexo by remember { mutableStateOf("") }
@@ -86,28 +60,30 @@ fun Form(navController: NavHostController){
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    Surface (
-        modifier = Modifier
-            .fillMaxWidth(),
-        color = Color.Transparent
+    val context = LocalContext.current
 
-    ){
-        Column (
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = Color.Transparent
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
-        ){
+        ) {
 
+            // Campo Nome
             TextField(
                 value = nome,
-                onValueChange = { nome = it},
+                onValueChange = { nome = it },
                 label = { Text("Nome") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Campo Data de Nascimento com Máscara
             DataNasc(
                 datansc = datansc,
                 onDateChange = { datansc = it }
@@ -115,27 +91,30 @@ fun Form(navController: NavHostController){
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Campo Sexo
             TextField(
                 value = sexo,
-                onValueChange = { sexo = it},
+                onValueChange = { sexo = it },
                 label = { Text("Sexo") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Campo Endereço
             TextField(
                 value = endereco,
-                onValueChange = { endereco = it},
+                onValueChange = { endereco = it },
                 label = { Text("Endereço") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Campo E-mail
             TextField(
                 value = email,
-                onValueChange = { email = it},
+                onValueChange = { email = it },
                 label = { Text("E-mail") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier.fillMaxWidth()
@@ -143,10 +122,11 @@ fun Form(navController: NavHostController){
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Campo Senha
             TextField(
                 value = password,
-                onValueChange = { password = it},
-                label = { Text("Password") },
+                onValueChange = { password = it },
+                label = { Text("Senha") },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth()
@@ -154,59 +134,80 @@ fun Form(navController: NavHostController){
 
             Spacer(modifier = Modifier.height(24.dp))
 
+            // Botão de Registro
+            val context = LocalContext.current
+            val db = AppDatabase.getDatabase(context)
+            val userDao = db.userDAO()
+
             RegisterButton(onClickAction = {
-                userViewModel.registerUser(
-                    nome = nome,
-                    dataNasc = datansc,
-                    sexo = sexo,
-                    endereco = endereco,
-                    email = email,
-                    password = password
-                )
+                if (nome.isNotEmpty() && datansc.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
+
+                    val novoUser = User(
+                        nome = nome,
+                        datansc = datansc,
+                        sexo = sexo,
+                        endereco = endereco,
+                        email = email,
+                        password = password
+                    )
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        userDao.registerUser(novoUser)
+                    }
+
+                    Toast.makeText(context, "Registro realizado com sucesso!", Toast.LENGTH_LONG).show()
+                    navController.navigate("login")
+                } else {
+                    Toast.makeText(context, "Preencha todos os campos obrigatórios!", Toast.LENGTH_SHORT).show()
+                }
             })
+
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text("Log in",
+            // Link para Login
+            Text(
+                "Log in",
+                color = Color.Black,
                 modifier = Modifier.clickable {
                     navController.navigate("login")
-                })
+                }
+            )
 
-            Spacer(modifier = Modifier.height(32.dp)) // Espaçamento inferior para o scroll
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
 
 @Composable
-fun RegisterButton(onClickAction: () -> Unit){
+fun RegisterButton(onClickAction: () -> Unit) {
     Surface(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Row (
-            modifier = Modifier
-                .fillMaxWidth(),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
-        ){
+        ) {
             Button(
                 onClick = onClickAction,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black,
                     contentColor = Color.White
                 )
-
             ) {
                 Text("Register")
             }
         }
     }
 }
+
 class DateMaskTransformation(private val mask: String = "##/##/####") : VisualTransformation {
     private val specialSymbolsIndices = mask.indices.filter { mask[it] != '#' }
     private val dateLength = mask.count { it == '#' }
 
     override fun filter(text: AnnotatedString): TransformedText {
-        val trimmedText = if (text.text.length >= dateLength) text.text.substring(0, dateLength) else text.text
+        val trimmedText =
+            if (text.text.length >= dateLength) text.text.substring(0, dateLength) else text.text
 
         var out = ""
         var maskIndex = 0
@@ -219,11 +220,10 @@ class DateMaskTransformation(private val mask: String = "##/##/####") : VisualTr
             maskIndex++
         }
 
-
         val offsetTranslator = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int {
                 if (offset == 0) return 0
-                val nonDigitCount = specialSymbolsIndices.count { it < offset + specialSymbolsIndices.count { it < offset } }
+                val nonDigitCount = specialSymbolsIndices.count { it < offset }
                 return offset + nonDigitCount
             }
 
@@ -251,11 +251,7 @@ fun DataNasc(datansc: String, onDateChange: (String) -> Unit) {
         },
         label = { Text("Data de Nascimento (DD/MM/AAAA)") },
         modifier = Modifier.fillMaxWidth(),
-
         visualTransformation = DateMaskTransformation(),
-
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number
-        )
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
     )
 }

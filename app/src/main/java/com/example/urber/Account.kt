@@ -1,6 +1,7 @@
 package com.example.urber
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -57,7 +58,7 @@ fun AccountScreen(navController: NavController) {
                     .padding(innerPadding)
                     .verticalScroll(rememberScrollState())
             ) {
-                AccountBody()
+                AccountBody(navController)
             }
 
         }
@@ -65,7 +66,7 @@ fun AccountScreen(navController: NavController) {
 }
 
 @Composable
-fun AccountBody(){
+fun AccountBody(navController: NavController){
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -88,7 +89,7 @@ fun AccountBody(){
                 w = 115.dp,
                 h = 100.dp,
                 imageVector = Icons.Default.Call  ,
-                text = "Ajuda"
+                text = "Ajuda",
             )
             AccountSmallCards(
                 w = 115.dp,
@@ -257,8 +258,9 @@ fun AccountBody(){
         AccountDownRows(
             painterResource(id = R.drawable.user),
             title = " Menage Uber account",
-            subtitle = null
-        )
+            subtitle = null,
+            modifier = Modifier.clickable { navController.navigate("edit") }
+                )
         Spacer(
             modifier = Modifier
                 .height(10.dp)
@@ -351,41 +353,40 @@ fun AccountLargeCards(title: String, subtitle: String?, image: Painter){
     }
 }
 @Composable
-fun AccountDownRows(image: Painter, title: String, subtitle: String?){
-    Row (
-        modifier = Modifier
-            .fillMaxSize()
+fun AccountDownRows(
+    image: Painter,
+    title: String,
+    subtitle: String?,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
             .height(50.dp)
             .padding(5.dp),
         verticalAlignment = Alignment.CenterVertically
-    ){
+    ) {
         Image(
-            modifier = Modifier
-                .size(30.dp),
+            modifier = Modifier.size(30.dp),
             painter = image,
             contentDescription = title
         )
-        Spacer(
-            modifier = Modifier
-                .width(20.dp)
-        )
-        Column (
-            modifier = Modifier,
+        Spacer(modifier = Modifier.width(20.dp))
+        Column(
             verticalArrangement = Arrangement.Center
-        ){
+        ) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold
             )
             if (subtitle != null && subtitle.isNotEmpty()) {
-                Text(
-                    text = subtitle
-                )
+                Text(text = subtitle)
             }
         }
     }
 }
+
 @Composable
 fun AccountHeader(){
     Card (

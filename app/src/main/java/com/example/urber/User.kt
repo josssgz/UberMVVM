@@ -2,8 +2,9 @@ package com.example.urber
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable // ✅ adicione isso
 
-@Entity(tableName = "userTable")
+@Entity(tableName = "user")
 data class User(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
@@ -12,5 +13,5 @@ data class User(
     val sexo: String,
     val endereco: String,
     val email: String,
-    val passwordHash: String
-)
+    val password: String,
+) : Serializable
