@@ -4,7 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -30,11 +28,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,66 +40,76 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.urber.data.local.AppDatabase
+import com.example.urber.data.repository.PlacesRepository
+import com.example.urber.ui.activity.ActivityViewModel
+import com.example.urber.ui.activity.ActivityViewModelFactory
 @Composable
 fun ActivityScreen(navController: NavHostController) {
 
+    // 1. Obter ViewModel e UiState
     val context = LocalContext.current
-    val placesDAO = remember {
-        AppDatabase.getDatabase(context).placesDAO()
-    }
-    val savedPlaces by placesDAO.getAllPlaces().collectAsStateWithLifecycle(initialValue = emptyList())
+    val viewModel: ActivityViewModel = viewModel(
+        factory = ActivityViewModelFactory(
+            PlacesRepository(AppDatabase.getDatabase(context).placesDAO())
+        )
+    )
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // 2. Remover 'placesDAO' e 'savedPlaces' locais
 
     Scaffold(
-            topBar = { HeaderActivity() },
-        ) { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                BodyActivity()
+        topBar = { HeaderActivity() },
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
+        ) {
+            BodyActivity()
 
-                if (savedPlaces.isNotEmpty()) {
-                    Text(
-                        text = "Locais Favoritos",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
-                    )
+            // 3. Ligar ao UiState
+            if (uiState.savedPlaces.isNotEmpty()) {
+                Text(
+                    text = "Locais Favoritos",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
+                )
 
-                    // Usamos um LazyColumn para exibir a lista, mas precisamos gerenciar sua altura
-                    // já que está dentro de uma Column com verticalScroll.
-                    LazyColumn(
-                        modifier = Modifier
-                            .height(500.dp) // Altura fixa ou calculada é essencial
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        userScrollEnabled = false // Desliga o scroll do LazyColumn se a Column externa já tem
-                    ) {
-                        items(savedPlaces) { place ->
-                            // Exibe os itens de forma simples
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(imageVector = Icons.Default.Place, contentDescription = null, tint = Color.Gray)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(text = place.desc)
-                            }
+                LazyColumn(
+                    modifier = Modifier
+                        .height(500.dp) // Altura fixa ou calculada é essencial
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    userScrollEnabled = false
+                ) {
+                    items(uiState.savedPlaces) { place -> // Ligar ao UiState
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(imageVector = Icons.Default.Place, contentDescription = null, tint = Color.Gray)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = place.desc) // Ligar ao UiState
                         }
                     }
-                } else {
-                    Text(
-                        text = "Nenhum local favorito salvo.",
-                        modifier = Modifier.padding(16.dp),
-                        color = Color.Gray
-                    )
                 }
+            } else {
+                Text(
+                    text = "Nenhum local favorito salvo.",
+                    modifier = Modifier.padding(16.dp),
+                    color = Color.Gray
+                )
             }
         }
     }
+}
+
+// --- O restante do ficheiro (UI estática) permanece igual ---
 
 @Composable
 fun BodyActivity(){
@@ -227,54 +233,54 @@ fun ActivityCard(image: Painter, title: String, subtitle: String){
             containerColor = Color.Transparent), border = BorderStroke(1.dp, Color.Gray)
     ){
 
-            Column(
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp),
+            verticalArrangement = Arrangement.Center
+        ){
+            Image(
+                painter = image,
+                contentDescription = title,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(10.dp),
-                verticalArrangement = Arrangement.Center
+                    .weight(1f)
+                    .fillMaxWidth()
+            )
+            Text(text = title,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = subtitle ,
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Card (
+                modifier = Modifier
+                    .width(120.dp)
+                    .height(40.dp)
             ){
-                Image(
-                    painter = image,
-                    contentDescription = title,
+                Button(
+                    onClick = { },
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                )
-                Text(text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = subtitle ,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Card (
-                    modifier = Modifier
-                        .width(120.dp)
-                        .height(40.dp)
-                ){
-                    Button(
-                        onClick = { },
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        colors = ButtonDefaults.buttonColors(Color.LightGray),
+                        .fillMaxSize(),
+                    colors = ButtonDefaults.buttonColors(Color.LightGray),
 
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.rebook),
-                            contentDescription = title,
-                            modifier = Modifier
-                                .weight(1f)
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .width(10.dp)
-                        )
-                        Text("Rebook", style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Black)
-                    }
+                    Image(
+                        painter = painterResource(id = R.drawable.rebook),
+                        contentDescription = title,
+                        modifier = Modifier
+                            .weight(1f)
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .width(10.dp)
+                    )
+                    Text("Rebook", style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Black)
                 }
             }
+        }
 
     }
 }
@@ -285,7 +291,7 @@ fun HeaderActivity(){
             .padding(top = 20.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent),
-        ){
+    ){
         Row (
             modifier = Modifier
                 .fillMaxWidth()

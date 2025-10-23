@@ -37,10 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,8 +48,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import kotlinx.coroutines.launch
+import com.example.urber.data.local.AppDatabase
+import com.example.urber.data.local.Places
+import com.example.urber.data.repository.PlacesRepository
+import com.example.urber.ui.home.HomeViewModel
+import com.example.urber.ui.home.HomeViewModelFactory
 
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -72,7 +73,7 @@ fun HomeBody(navController: NavController, modifier: Modifier = Modifier) {
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        item { HomeWhereTo() }
+        item { HomeWhereTo() } // ViewModel será injetado em HomeWhereTo
         item { HomeSuggestions() }
         item { HomeCardsWText() }
     }
@@ -80,75 +81,67 @@ fun HomeBody(navController: NavController, modifier: Modifier = Modifier) {
 
 @Composable
 fun HomeWhereTo() {
+    // 1. Obter ViewModel e UiState
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
+    val viewModel: HomeViewModel = viewModel(
+        factory = HomeViewModelFactory(
+            PlacesRepository(AppDatabase.getDatabase(context).placesDAO())
+        )
+    )
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val placesDAO = remember {
-        AppDatabase.getDatabase(context).placesDAO()
-    }
-
-    val places by placesDAO.getAllPlaces().collectAsStateWithLifecycle(initialValue = emptyList())
-
-    var placeToEdit by remember { mutableStateOf<Places?>(null) }
+    // 2. Remover toda a lógica local (scope, placesDAO, places, placeToEdit)
 
     Column {
-        Formulario { textNewPlace ->
-            if (textNewPlace.isNotBlank()) {
-                scope.launch{
-                    placesDAO.addPlace(Places(desc = textNewPlace))
-                }
-            }
-        }
+        Formulario(
+            textoInput = uiState.whereToInput, // Ligar ao UiState
+            onTextoChange = { viewModel.onWhereToInputChange(it) }, // Chamar ViewModel
+            aoAdicionar = { viewModel.onAddPlace() } // Chamar ViewModel
+        )
         Spacer(modifier = Modifier.height(10.dp))
 
-        places.forEach { place ->
+        uiState.places.forEach { place -> // Ligar ao UiState
             PlaceItem(
                 objPlace = place,
-                onUpdate = { placeToEdit = place },
-                onDelete = {
-                    scope.launch {
-                        placesDAO.deletePlace(it)
-                    }
-                }
+                onUpdate = { viewModel.onEditClick(it) }, // Chamar ViewModel
+                onDelete = { viewModel.onDeletePlace(it) } // Chamar ViewModel
             )
             Spacer(modifier = Modifier.height(5.dp))
         }
     }
-    if(placeToEdit != null){
+
+    // 3. Controlar diálogo pelo UiState
+    if(uiState.placeToEdit != null){
         EditPlaceDialog(
-            objPlace = placeToEdit!!,
-            onDismiss = { placeToEdit = null },
-            onSave = { newText ->
-                scope.launch {
-                    val updatedPlace = placeToEdit!!.copy(desc = newText)
-                    placesDAO.updatePlace(updatedPlace)
-                    placeToEdit = null
-                }
-            }
+            editedText = uiState.editDialogText, // Ligar ao UiState
+            onTextChange = { viewModel.onEditDialogTextChange(it) }, // Chamar ViewModel
+            onDismiss = { viewModel.onDismissEditDialog() }, // Chamar ViewModel
+            onSave = { viewModel.onSaveEditDialog() } // Chamar ViewModel
         )
     }
 }
 
 @Composable
-fun EditPlaceDialog(objPlace: Places, onDismiss: () -> Unit, onSave: (String) -> Unit) {
-    var editedText by remember { mutableStateOf(objPlace.desc) }
+fun EditPlaceDialog(
+    editedText: String,
+    onTextChange: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onSave: () -> Unit
+) {
+    // 4. Remover 'var editedText by remember'
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Editar Local") },
         text = {
             TextField(
-                value = editedText,
-                onValueChange = { editedText = it },
+                value = editedText, // Ligar ao parâmetro
+                onValueChange = onTextChange, // Chamar a função do parâmetro
                 singleLine = true
             )
         },
         confirmButton = {
             Button(
-                onClick = {
-                    if (editedText.isNotBlank()) {
-                        onSave(editedText)
-                    }
-                },
+                onClick = onSave, // Chamar a função do parâmetro
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Green
                 )
@@ -170,9 +163,12 @@ fun EditPlaceDialog(objPlace: Places, onDismiss: () -> Unit, onSave: (String) ->
 }
 
 @Composable
-fun Formulario(aoAdicionar: (String) -> Unit) {
-    var textoInput by remember { mutableStateOf("") }
-
+fun Formulario(
+    textoInput: String,
+    onTextoChange: (String) -> Unit,
+    aoAdicionar: () -> Unit
+) {
+    // 5. Remover 'var textoInput by remember'
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -181,8 +177,8 @@ fun Formulario(aoAdicionar: (String) -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         TextField(
-            value = textoInput,
-            onValueChange = { textoInput = it },
+            value = textoInput, // Ligar ao parâmetro
+            onValueChange = onTextoChange, // Chamar a função do parâmetro
             shape = RoundedCornerShape(16.dp),
             placeholder = {
                 Row {
@@ -196,10 +192,7 @@ fun Formulario(aoAdicionar: (String) -> Unit) {
         Spacer(modifier = Modifier.width(5.dp))
 
         Button(
-            onClick = {
-                aoAdicionar(textoInput)
-                textoInput = ""
-            },
+            onClick = aoAdicionar, // Chamar a função do parâmetro
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Black,
                 contentColor = Color.White
@@ -245,6 +238,8 @@ data class CardsWText(
     val subtitle: String,
     val image: Int
 )
+
+// --- O restante do ficheiro (UI estática) permanece igual ---
 
 @Composable
 fun HomeCardsWText(){

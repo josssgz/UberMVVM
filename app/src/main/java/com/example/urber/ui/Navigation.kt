@@ -9,6 +9,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.urber.ui.activity.ActivityScreen
+import com.example.urber.ui.editprofile.EditProfileScreen
+import com.example.urber.ui.home.HomeScreen
+import com.example.urber.ui.register.RegisterScreen
 
 @Composable
 fun AppNavigation(){

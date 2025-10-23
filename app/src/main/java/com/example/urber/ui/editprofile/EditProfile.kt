@@ -1,6 +1,5 @@
 package com.example.urber
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,40 +13,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.urber.data.local.AppDatabase
+import com.example.urber.data.local.User
+import com.example.urber.data.repository.UserRepository
+import com.example.urber.ui.editprofile.EditProfileUiState
+import com.example.urber.ui.editprofile.EditProfileViewModel
+import com.example.urber.ui.editprofile.EditProfileViewModelFactory
 
 @Composable
 fun EditProfileScreen() {
+    // 1. Obter ViewModel e UiState
     val context = LocalContext.current
-    val db = AppDatabase.getDatabase(context)
-    val userDao = db.userDAO()
+    val viewModel: EditProfileViewModel = viewModel(
+        factory = EditProfileViewModelFactory(
+            UserRepository(AppDatabase.getDatabase(context).userDAO())
+        )
+    )
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val usuarios by userDao.getAllUsers().collectAsState(initial = emptyList())
-
-    var showEditDialog by remember { mutableStateOf(false) }
-    var usuarioSelecionado by remember { mutableStateOf<User?>(null) }
-
-    fun onDeleteUser(user: User) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                userDao.deleteUser(user)
-            } catch (e: Exception) {
-                Log.e("UserDAO", "Erro ao deletar: ${e.message}")
-            }
-        }
-    }
-
-    fun onUpdateUser(user: User) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                userDao.updateUser(user)
-            } catch (e: Exception) {
-                Log.e("UserDAO", "Erro ao atualizar: ${e.message}")
-            }
-        }
-    }
+    // 2. Remover toda a lógica local (val db, val userDao, fun onDeleteUser, etc.)
 
     Column(
         modifier = Modifier
@@ -55,7 +41,7 @@ fun EditProfileScreen() {
             .padding(16.dp)
     ) {
         Text(
-            text = "Usuários Cadastrados (${usuarios.size})",
+            text = "Usuários Cadastrados (${uiState.usuarios.size})", // Ligar ao UiState
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
@@ -64,31 +50,23 @@ fun EditProfileScreen() {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(usuarios, key = { it.id }) { user ->
+            items(uiState.usuarios, key = { it.id }) { user -> // Ligar ao UiState
                 UserCard(
                     user = user,
-                    onEdit = {
-                        usuarioSelecionado = it
-                        showEditDialog = true
-                    },
-                    onDelete = { onDeleteUser(it) }
+                    onEdit = { viewModel.onEditClick(it) }, // Chamar ViewModel
+                    onDelete = { viewModel.onDeleteUser(it) } // Chamar ViewModel
                 )
             }
         }
     }
 
-    if (showEditDialog && usuarioSelecionado != null) {
+    // 3. Controlar o diálogo pelo UiState
+    if (uiState.usuarioEmEdicao != null) {
         UserEditDialog(
-            user = usuarioSelecionado!!,
-            onDismiss = {
-                showEditDialog = false
-                usuarioSelecionado = null
-            },
-            onSave = { atualizado ->
-                onUpdateUser(atualizado)
-                showEditDialog = false
-                usuarioSelecionado = null
-            }
+            uiState = uiState, // Passar o state
+            viewModel = viewModel, // Passar o viewModel
+            onDismiss = { viewModel.onDismissDialog() }, // Chamar ViewModel
+            onSave = { viewModel.onSaveDialog() } // Chamar ViewModel
         )
     }
 }
@@ -136,16 +114,13 @@ fun UserCard(
 
 @Composable
 fun UserEditDialog(
-    user: User,
+    uiState: EditProfileUiState, // Recebe o UiState
+    viewModel: EditProfileViewModel, // Recebe o ViewModel
     onDismiss: () -> Unit,
-    onSave: (User) -> Unit
+    onSave: () -> Unit // Não precisa mais do parâmetro User
 ) {
-    var nomeEdit by remember { mutableStateOf(user.nome) }
-    var datanscEdit by remember { mutableStateOf(user.datansc) }
-    var sexoEdit by remember { mutableStateOf(user.sexo) }
-    var enderecoEdit by remember { mutableStateOf(user.endereco) }
-    var emailEdit by remember { mutableStateOf(user.email) }
-    var passwordEdit by remember { mutableStateOf(user.password) }
+    // 4. Remover todos os 'var nomeEdit by remember { mutableStateOf(...) }'
+    val user = uiState.usuarioEmEdicao!! // Sabemos que não é nulo
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -153,38 +128,38 @@ fun UserEditDialog(
         text = {
             Column {
                 OutlinedTextField(
-                    value = nomeEdit,
-                    onValueChange = { nomeEdit = it },
+                    value = uiState.nomeEdit, // Ligar ao UiState
+                    onValueChange = { viewModel.onEditNomeChange(it) }, // Chamar ViewModel
                     label = { Text("Nome") },
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
-                    value = datanscEdit,
-                    onValueChange = { datanscEdit = it },
+                    value = uiState.datanscEdit, // Ligar ao UiState
+                    onValueChange = { viewModel.onEditDataNscChange(it) }, // Chamar ViewModel
                     label = { Text("Data de Nascimento") },
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
-                    value = sexoEdit,
-                    onValueChange = { sexoEdit = it },
+                    value = uiState.sexoEdit, // Ligar ao UiState
+                    onValueChange = { viewModel.onEditSexoChange(it) }, // Chamar ViewModel
                     label = { Text("Sexo") },
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
-                    value = enderecoEdit,
-                    onValueChange = { enderecoEdit = it },
+                    value = uiState.enderecoEdit, // Ligar ao UiState
+                    onValueChange = { viewModel.onEditEnderecoChange(it) }, // Chamar ViewModel
                     label = { Text("Endereço") },
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
-                    value = emailEdit,
-                    onValueChange = { emailEdit = it },
+                    value = uiState.emailEdit, // Ligar ao UiState
+                    onValueChange = { viewModel.onEditEmailChange(it) }, // Chamar ViewModel
                     label = { Text("Email") },
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
-                    value = passwordEdit,
-                    onValueChange = { passwordEdit = it },
+                    value = uiState.passwordEdit, // Ligar ao UiState
+                    onValueChange = { viewModel.onEditPasswordChange(it) }, // Chamar ViewModel
                     label = { Text("Senha") },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -192,18 +167,7 @@ fun UserEditDialog(
         },
         confirmButton = {
             Button(
-                onClick = {
-                    onSave(
-                        user.copy(
-                            nome = nomeEdit,
-                            datansc = datanscEdit,
-                            sexo = sexoEdit,
-                            endereco = enderecoEdit,
-                            email = emailEdit,
-                            password = passwordEdit
-                        )
-                    )
-                }
+                onClick = onSave // Apenas chama o onSave
             ) { Text("Salvar") }
         },
         dismissButton = {
