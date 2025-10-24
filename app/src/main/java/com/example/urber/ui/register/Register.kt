@@ -1,4 +1,4 @@
-package com.example.urber
+package com.example.urber.ui.register
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -21,13 +21,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.urber.data.local.AppDatabase
 import com.example.urber.data.repository.UserRepository
-import com.example.urber.ui.register.RegisterUiState
-import com.example.urber.ui.register.RegisterViewModel
-import com.example.urber.ui.register.RegisterViewModelFactory
 
 @Composable
 fun RegisterScreen(navController: NavHostController) {
-    // 1. Obter o ViewModel e o UiState
     val context = LocalContext.current
     val viewModel: RegisterViewModel = viewModel(
         factory = RegisterViewModelFactory(
@@ -36,15 +32,13 @@ fun RegisterScreen(navController: NavHostController) {
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // 2. Efeito para lidar com a navegação pós-registo
     LaunchedEffect(key1 = uiState.registrationSuccess) {
         if (uiState.registrationSuccess) {
             Toast.makeText(context, "Registro realizado com sucesso!", Toast.LENGTH_LONG).show()
             navController.navigate("login") {
-                // Limpa a backstack para que o utilizador não possa voltar ao registo
                 popUpTo("register") { inclusive = true }
             }
-            viewModel.onRegistrationHandled() // Avisa o ViewModel que a navegação foi tratada
+            viewModel.onRegistrationHandled()
         }
     }
 
@@ -68,7 +62,6 @@ fun RegisterScreen(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 3. Passar o estado e o viewModel para o formulário
                 Form(
                     navController = navController,
                     uiState = uiState,
@@ -82,10 +75,9 @@ fun RegisterScreen(navController: NavHostController) {
 @Composable
 fun Form(
     navController: NavHostController,
-    uiState: RegisterUiState, // Recebe o UiState
-    viewModel: RegisterViewModel // Recebe o ViewModel
+    uiState: RegisterUiState,
+    viewModel: RegisterViewModel
 ) {
-    // 4. Remover todos os 'var nome by remember { mutableStateOf("") }'
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -98,48 +90,43 @@ fun Form(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // Campo Nome
             TextField(
-                value = uiState.nome, // Ligar ao UiState
-                onValueChange = { viewModel.onNomeChange(it) }, // Chamar o ViewModel
+                value = uiState.nome,
+                onValueChange = { viewModel.onNomeChange(it) },
                 label = { Text("Nome") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo Data de Nascimento com Máscara
             DataNasc(
-                datansc = uiState.datansc, // Ligar ao UiState
-                onDateChange = { viewModel.onDataNscChange(it) } // Chamar o ViewModel
+                datansc = uiState.datansc,
+                onDateChange = { viewModel.onDataNscChange(it) }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo Sexo
             TextField(
-                value = uiState.sexo, // Ligar ao UiState
-                onValueChange = { viewModel.onSexoChange(it) }, // Chamar o ViewModel
+                value = uiState.sexo,
+                onValueChange = { viewModel.onSexoChange(it) },
                 label = { Text("Sexo") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo Endereço
             TextField(
-                value = uiState.endereco, // Ligar ao UiState
-                onValueChange = { viewModel.onEnderecoChange(it) }, // Chamar o ViewModel
+                value = uiState.endereco,
+                onValueChange = { viewModel.onEnderecoChange(it) },
                 label = { Text("Endereço") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo E-mail
             TextField(
-                value = uiState.email, // Ligar ao UiState
-                onValueChange = { viewModel.onEmailChange(it) }, // Chamar o ViewModel
+                value = uiState.email,
+                onValueChange = { viewModel.onEmailChange(it) },
                 label = { Text("E-mail") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier.fillMaxWidth()
@@ -147,10 +134,9 @@ fun Form(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo Senha
             TextField(
-                value = uiState.password, // Ligar ao UiState
-                onValueChange = { viewModel.onPasswordChange(it) }, // Chamar o ViewModel
+                value = uiState.password,
+                onValueChange = { viewModel.onPasswordChange(it) },
                 label = { Text("Senha") },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -159,18 +145,13 @@ fun Form(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Botão de Registro
-            // 5. Remover toda a lógica de DB e Coroutine daqui
             RegisterButton(onClickAction = {
-                // 6. Apenas notificar o ViewModel
                 viewModel.onRegisterClick()
-                // A lógica de Toast/Navegação está no LaunchedEffect
             })
 
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Link para Login
             Text(
                 "Log in",
                 color = Color.Black,
@@ -244,11 +225,10 @@ class DateMaskTransformation(private val mask: String = "##/##/####") : VisualTr
 
 @Composable
 fun DataNasc(datansc: String, onDateChange: (String) -> Unit) {
-    // A lógica de validação (maxDigits) foi para o ViewModel
     TextField(
         value = datansc,
         onValueChange = { novoValor ->
-            onDateChange(novoValor) // Apenas passa o valor para o ViewModel
+            onDateChange(novoValor)
         },
         label = { Text("Data de Nascimento (DD/MM/AAAA)") },
         modifier = Modifier.fillMaxWidth(),

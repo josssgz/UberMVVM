@@ -1,4 +1,4 @@
-package com.example.urber
+package com.example.urber.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

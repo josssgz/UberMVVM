@@ -1,4 +1,4 @@
-package com.example.urber
+package com.example.urber.ui.activity
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -42,14 +42,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.example.urber.R
 import com.example.urber.data.local.AppDatabase
 import com.example.urber.data.repository.PlacesRepository
-import com.example.urber.ui.activity.ActivityViewModel
-import com.example.urber.ui.activity.ActivityViewModelFactory
+
 @Composable
 fun ActivityScreen(navController: NavHostController) {
 
-    // 1. Obter ViewModel e UiState
     val context = LocalContext.current
     val viewModel: ActivityViewModel = viewModel(
         factory = ActivityViewModelFactory(
@@ -57,8 +56,6 @@ fun ActivityScreen(navController: NavHostController) {
         )
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    // 2. Remover 'placesDAO' e 'savedPlaces' locais
 
     Scaffold(
         topBar = { HeaderActivity() },
@@ -70,7 +67,6 @@ fun ActivityScreen(navController: NavHostController) {
         ) {
             BodyActivity()
 
-            // 3. Ligar ao UiState
             if (uiState.savedPlaces.isNotEmpty()) {
                 Text(
                     text = "Locais Favoritos",
@@ -81,20 +77,20 @@ fun ActivityScreen(navController: NavHostController) {
 
                 LazyColumn(
                     modifier = Modifier
-                        .height(500.dp) // Altura fixa ou calculada é essencial
+                        .height(500.dp)
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     userScrollEnabled = false
                 ) {
-                    items(uiState.savedPlaces) { place -> // Ligar ao UiState
+                    items(uiState.savedPlaces) { place ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(imageVector = Icons.Default.Place, contentDescription = null, tint = Color.Gray)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = place.desc) // Ligar ao UiState
+                            Text(text = place.desc)
                         }
                     }
                 }
@@ -108,8 +104,6 @@ fun ActivityScreen(navController: NavHostController) {
         }
     }
 }
-
-// --- O restante do ficheiro (UI estática) permanece igual ---
 
 @Composable
 fun BodyActivity(){

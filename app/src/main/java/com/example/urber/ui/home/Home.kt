@@ -1,4 +1,4 @@
-package com.example.urber
+package com.example.urber.ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -50,11 +50,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.urber.R
+import com.example.urber.ui.ServiceSmallCards
 import com.example.urber.data.local.AppDatabase
 import com.example.urber.data.local.Places
 import com.example.urber.data.repository.PlacesRepository
-import com.example.urber.ui.home.HomeViewModel
-import com.example.urber.ui.home.HomeViewModelFactory
 
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -73,7 +73,7 @@ fun HomeBody(navController: NavController, modifier: Modifier = Modifier) {
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        item { HomeWhereTo() } // ViewModel será injetado em HomeWhereTo
+        item { HomeWhereTo() }
         item { HomeSuggestions() }
         item { HomeCardsWText() }
     }
@@ -81,7 +81,6 @@ fun HomeBody(navController: NavController, modifier: Modifier = Modifier) {
 
 @Composable
 fun HomeWhereTo() {
-    // 1. Obter ViewModel e UiState
     val context = LocalContext.current
     val viewModel: HomeViewModel = viewModel(
         factory = HomeViewModelFactory(
@@ -90,33 +89,31 @@ fun HomeWhereTo() {
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // 2. Remover toda a lógica local (scope, placesDAO, places, placeToEdit)
 
     Column {
         Formulario(
-            textoInput = uiState.whereToInput, // Ligar ao UiState
-            onTextoChange = { viewModel.onWhereToInputChange(it) }, // Chamar ViewModel
-            aoAdicionar = { viewModel.onAddPlace() } // Chamar ViewModel
+            textoInput = uiState.whereToInput,
+            onTextoChange = { viewModel.onWhereToInputChange(it) },
+            aoAdicionar = { viewModel.onAddPlace() }
         )
         Spacer(modifier = Modifier.height(10.dp))
 
-        uiState.places.forEach { place -> // Ligar ao UiState
+        uiState.places.forEach { place ->
             PlaceItem(
                 objPlace = place,
-                onUpdate = { viewModel.onEditClick(it) }, // Chamar ViewModel
-                onDelete = { viewModel.onDeletePlace(it) } // Chamar ViewModel
+                onUpdate = { viewModel.onEditClick(it) },
+                onDelete = { viewModel.onDeletePlace(it) }
             )
             Spacer(modifier = Modifier.height(5.dp))
         }
     }
 
-    // 3. Controlar diálogo pelo UiState
     if(uiState.placeToEdit != null){
         EditPlaceDialog(
-            editedText = uiState.editDialogText, // Ligar ao UiState
-            onTextChange = { viewModel.onEditDialogTextChange(it) }, // Chamar ViewModel
-            onDismiss = { viewModel.onDismissEditDialog() }, // Chamar ViewModel
-            onSave = { viewModel.onSaveEditDialog() } // Chamar ViewModel
+            editedText = uiState.editDialogText,
+            onTextChange = { viewModel.onEditDialogTextChange(it) },
+            onDismiss = { viewModel.onDismissEditDialog() },
+            onSave = { viewModel.onSaveEditDialog() }
         )
     }
 }
@@ -128,20 +125,19 @@ fun EditPlaceDialog(
     onDismiss: () -> Unit,
     onSave: () -> Unit
 ) {
-    // 4. Remover 'var editedText by remember'
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Editar Local") },
         text = {
             TextField(
-                value = editedText, // Ligar ao parâmetro
-                onValueChange = onTextChange, // Chamar a função do parâmetro
+                value = editedText,
+                onValueChange = onTextChange,
                 singleLine = true
             )
         },
         confirmButton = {
             Button(
-                onClick = onSave, // Chamar a função do parâmetro
+                onClick = onSave,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Green
                 )
@@ -168,7 +164,6 @@ fun Formulario(
     onTextoChange: (String) -> Unit,
     aoAdicionar: () -> Unit
 ) {
-    // 5. Remover 'var textoInput by remember'
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -177,8 +172,8 @@ fun Formulario(
         verticalAlignment = Alignment.CenterVertically
     ) {
         TextField(
-            value = textoInput, // Ligar ao parâmetro
-            onValueChange = onTextoChange, // Chamar a função do parâmetro
+            value = textoInput,
+            onValueChange = onTextoChange,
             shape = RoundedCornerShape(16.dp),
             placeholder = {
                 Row {
@@ -192,7 +187,7 @@ fun Formulario(
         Spacer(modifier = Modifier.width(5.dp))
 
         Button(
-            onClick = aoAdicionar, // Chamar a função do parâmetro
+            onClick = aoAdicionar,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Black,
                 contentColor = Color.White
@@ -239,7 +234,6 @@ data class CardsWText(
     val image: Int
 )
 
-// --- O restante do ficheiro (UI estática) permanece igual ---
 
 @Composable
 fun HomeCardsWText(){

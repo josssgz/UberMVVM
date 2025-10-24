@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.example.urber.ui.AppNavigation
 import com.example.urber.ui.theme.UrberTheme
 
 class MainActivity : ComponentActivity() {

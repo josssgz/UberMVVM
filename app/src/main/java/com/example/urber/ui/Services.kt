@@ -1,4 +1,4 @@
-package com.example.urber
+package com.example.urber.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.urber.R
 
 //@Preview (showBackground = true)
 @Composable

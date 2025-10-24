@@ -1,4 +1,4 @@
-package com.example.urber
+package com.example.urber.data.local
 
 import androidx.room.Dao
 import androidx.room.Delete
